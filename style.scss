@@ -1,0 +1,60 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 95vh;
+}
+
+.textarea-input {
+  width: 100%;
+  height: 50%;
+}
+
+.keyboard-container {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: space-between;
+  width: 814px;
+  height: 260px;
+  &__key {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    border: 2px solid black;
+    background-color: gray;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    &:hover {
+      background-color: darkgray;
+    }
+  }
+}
+
+#Backspace,
+#Enter,
+#CapsLock,
+#ShiftLeft,
+#ShiftRight,
+#ControlLeft,
+#ControlRight {
+  width: 115px;
+}
+
+#Space {
+  width: 450px;
+}
+
+#Tab {
+  width: 80px;
+}
+
+.pressed {
+  background-color: darkgray;
+  border-radius: 25px;
+}
