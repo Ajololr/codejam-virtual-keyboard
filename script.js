@@ -290,7 +290,7 @@ function toggleCapsLock() {
   isCapsLock = !isCapsLock;
 
   if (isCapsLock) {
-    keyArr.forEach(key => {
+    keyArr.forEach((key) => {
       const keyElement = document.getElementById(key.keyCode);
 
       if (key.specialValue) {
@@ -300,7 +300,7 @@ function toggleCapsLock() {
       }
     });
   } else {
-    keyArr.forEach(key => {
+    keyArr.forEach((key) => {
       const keyElement = document.getElementById(key.keyCode);
 
       if (key.specialValue) {
@@ -318,29 +318,29 @@ function triggerButton(keyCode) {
 
   document.getElementById('textarea-input').focus();
 
-  switch(keyCode) {
-    case 'Enter': 
+  switch (keyCode) {
+    case 'Enter':
       text += '\n';
       break;
-      
-    case 'Backspace': 
-      text = text.substring(0, text.length - 1);;  
+
+    case 'Backspace':
+      text = text.substring(0, text.length - 1);
       break;
-      
-    case 'Space': 
+
+    case 'Space':
       text += ' ';
       break;
-      
-    case 'Tab': 
+
+    case 'Tab':
       text += '\t';
       break;
-      
-    case 'AltLeft': 
+
+    case 'AltLeft':
     case 'AltRight':
-    case 'ControlLeft':  
-    case 'ControlRight': 
+    case 'ControlLeft':
+    case 'ControlRight':
       break;
-    
+
     case 'CapsLock':
       if (button.classList.contains('pressed')) {
         button.classList.remove('pressed');
@@ -350,12 +350,12 @@ function triggerButton(keyCode) {
       toggleCapsLock();
       break;
 
-    case 'ShiftLeft': 
-    case 'ShiftRight': 
+    case 'ShiftLeft':
+    case 'ShiftRight':
       if (isCapsLock) {
-        keyArr.forEach(key => {
+        keyArr.forEach((key) => {
           const keyElement = document.getElementById(key.keyCode);
-    
+
           if (key.specialValue) {
             keyElement.textContent = key.value;
           } else if (key.valueRu) {
@@ -363,9 +363,9 @@ function triggerButton(keyCode) {
           }
         });
       } else {
-        keyArr.forEach(key => {
+        keyArr.forEach((key) => {
           const keyElement = document.getElementById(key.keyCode);
-    
+
           if (key.specialValue) {
             keyElement.textContent = key.specialValue;
           } else if (key.valueRu) {
@@ -378,16 +378,16 @@ function triggerButton(keyCode) {
     default:
       text += button.textContent;
   }
-  document.getElementById("textarea-input").value = text;
+  document.getElementById('textarea-input').value = text;
   if (keyCode !== 'CapsLock') button.classList.add('pressed');
 }
 
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', (event) => {
   triggerButton(event.code);
 
   if (document.getElementById('ShiftLeft').classList.contains('pressed') && document.getElementById('AltLeft').classList.contains('pressed')) {
-    keyArr.forEach(key => {
-      elem = document.getElementById(key.keyCode);
+    keyArr.forEach((key) => {
+      const elem = document.getElementById(key.keyCode);
 
       if (isEnglish) {
         elem.textContent = key.valueRu || key.value;
@@ -395,24 +395,24 @@ document.addEventListener('keydown', function(event) {
         elem.textContent = key.valueEng || key.value;
       }
     });
-       
+
     isEnglish = !isEnglish;
-    localStorage.setItem('keyboardLanguage', isEnglish);  
+    localStorage.setItem('keyboardLanguage', isEnglish);
 
     setTimeout(() => {
       document.getElementById('AltLeft').classList.remove('pressed');
-    }, 300)
+    }, 300);
   }
-})
+});
 
-document.addEventListener('keyup', function(event) {
+document.addEventListener('keyup', (event) => {
   if (event.code !== 'CapsLock') document.getElementById(event.code).classList.remove('pressed');
 
   if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
     if (isCapsLock) {
-      keyArr.forEach(key => {
+      keyArr.forEach((key) => {
         const keyElement = document.getElementById(key.keyCode);
-  
+
         if (key.specialValue) {
           keyElement.textContent = key.specialValue;
         } else if (key.valueRu) {
@@ -420,9 +420,9 @@ document.addEventListener('keyup', function(event) {
         }
       });
     } else {
-      keyArr.forEach(key => {
+      keyArr.forEach((key) => {
         const keyElement = document.getElementById(key.keyCode);
-  
+
         if (key.specialValue) {
           keyElement.textContent = key.value;
         } else if (key.valueRu) {
@@ -433,20 +433,20 @@ document.addEventListener('keyup', function(event) {
   }
 });
 
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('DOMContentLoaded', () => {
   const input = document.createElement('textarea');
   const keyboard = document.createElement('div');
-  isEnglish = localStorage.getItem('keyboardLanguage') === 'false' ? false : true;
+  isEnglish = localStorage.getItem('keyboardLanguage') !== 'false';
 
-  input.setAttribute('id', 'textarea-input')
+  input.setAttribute('id', 'textarea-input');
   keyboard.classList.add('keyboard-container');
 
-  input.addEventListener('keydown', function(event) {
+  input.addEventListener('keydown', (event) => {
     event.preventDefault();
-  })
+  });
 
-  keyArr.forEach(key => {
-    const keyElement = document.createElement("button");
+  keyArr.forEach((key) => {
+    const keyElement = document.createElement('button');
 
     keyElement.classList.add('keyboard-container__key');
     keyElement.setAttribute('id', key.keyCode);
