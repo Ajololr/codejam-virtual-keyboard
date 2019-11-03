@@ -67,10 +67,12 @@ const keyArr = [
   {
     value: 'Backspace',
     keyCode: 'Backspace',
+    keyValue: '\b',
   },
   {
     value: 'Tab',
     keyCode: 'Tab',
+    keyValue: '\t',
   },
   {
     valueRu: 'й',
@@ -199,6 +201,7 @@ const keyArr = [
   {
     value: 'Enter',
     keyCode: 'Enter',
+    keyValue: '\n',
   },
   {
     value: 'Shift',
@@ -280,31 +283,178 @@ const keyArr = [
   },
 ];
 
+let isEnglish = false;
+let isCapsLock = false;
+
+function toggleCapsLock() {
+  isCapsLock = !isCapsLock;
+
+  if (isCapsLock) {
+    keyArr.forEach(key => {
+      const keyElement = document.getElementById(key.keyCode);
+
+      if (key.specialValue) {
+        keyElement.textContent = key.specialValue;
+      } else if (key.valueRu) {
+        keyElement.textContent = keyElement.textContent.toUpperCase();
+      }
+    });
+  } else {
+    keyArr.forEach(key => {
+      const keyElement = document.getElementById(key.keyCode);
+
+      if (key.specialValue) {
+        keyElement.textContent = key.value;
+      } else if (key.valueRu) {
+        keyElement.textContent = keyElement.textContent.toLowerCase();
+      }
+    });
+  }
+}
+
+function triggerButton(keyCode) {
+  const button = document.getElementById(keyCode);
+  text = document.getElementById("textarea-input").value;
+
+  switch(keyCode) {
+    case 'Enter': 
+      text += '\n';
+      break;
+      
+    case 'Backspace': 
+      text = text.substring(0, text.length - 1);;  
+      break;
+      
+    case 'Space': 
+      text += ' ';
+      break;
+      
+    case 'Tab': 
+      text += '\t';
+      break;
+      
+    case 'AltLeft': 
+    case 'AltRight':
+    case 'ControlLeft':  
+    case 'ControlRight': 
+      break;
+    
+    case 'CapsLock':
+      if (button.classList.contains('pressed')) {
+        button.classList.remove('pressed');
+      } else {
+        button.classList.add('pressed');
+      }
+      toggleCapsLock();
+      break;
+
+    case 'ShiftLeft': 
+    case 'ShiftRight': 
+      if (isCapsLock) {
+        keyArr.forEach(key => {
+          const keyElement = document.getElementById(key.keyCode);
+    
+          if (key.specialValue) {
+            keyElement.textContent = key.value;
+          } else if (key.valueRu) {
+            keyElement.textContent = keyElement.textContent.toLowerCase();
+          }
+        });
+      } else {
+        keyArr.forEach(key => {
+          const keyElement = document.getElementById(key.keyCode);
+    
+          if (key.specialValue) {
+            keyElement.textContent = key.specialValue;
+          } else if (key.valueRu) {
+            keyElement.textContent = keyElement.textContent.toUpperCase();
+          }
+        });
+      }
+      break;
+
+    default:
+      text += button.textContent;
+  }
+  document.getElementById("textarea-input").value = text;
+  if (event.code !== 'CapsLock') button.classList.add('pressed');
+}
+
 window.addEventListener('DOMContentLoaded', function () {
+  const input = document.createElement('textarea');
   const keyboard = document.createElement('div');
+
+  input.setAttribute('id', 'textarea-input')
   keyboard.classList.add('keyboard-container');
 
   keyArr.forEach(key => {
     const keyElement = document.createElement("button");
+
     keyElement.classList.add('keyboard-container__key');
     keyElement.setAttribute('id', key.keyCode);
 
-    if (key.valueRu) {
-      keyElement.textContent = key.valueRu;
+    keyElement.addEventListener('click', () => {
+      triggerButton(key.keyCode);
+      setTimeout(() => {
+        keyElement.classList.remove('pressed')
+      }, 300);
+    });
+
+    if (isEnglish) {
+      keyElement.textContent = key.valueEng || key.value;
     } else {
-      keyElement.textContent = key.value;
+      keyElement.textContent = key.valueRu || key.value;
     }
 
     keyboard.appendChild(keyElement);
   });
 
+  document.body.appendChild(input);
   document.body.appendChild(keyboard);
 });
 
 document.addEventListener('keydown', function(event) {
-  document.getElementById(event.code).classList.add('pressed');
-});
+  triggerButton(event.code);
+
+  if (document.getElementById('ShiftLeft').classList.contains('pressed') && document.getElementById('AltLeft').classList.contains('pressed')) {
+    keyArr.forEach(key => {
+      elem = document.getElementById(key.keyCode);
+
+      if (isEnglish) {
+        elem.textContent = key.valueRu || key.value;
+      } else {
+        elem.textContent = key.valueEng || key.value;
+      }
+    });
+       
+    isEnglish = !isEnglish;
+  }
+})
 
 document.addEventListener('keyup', function(event) {
-  document.getElementById(event.code).classList.remove('pressed');
+  if (event.code !== 'CapsLock') document.getElementById(event.code).classList.remove('pressed');
+
+  if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
+    if (isCapsLock) {
+      keyArr.forEach(key => {
+        const keyElement = document.getElementById(key.keyCode);
+  
+        if (key.specialValue) {
+          keyElement.textContent = key.specialValue;
+        } else if (key.valueRu) {
+          keyElement.textContent = keyElement.textContent.toUpperCase();
+        }
+      });
+    } else {
+      keyArr.forEach(key => {
+        const keyElement = document.getElementById(key.keyCode);
+  
+        if (key.specialValue) {
+          keyElement.textContent = key.value;
+        } else if (key.valueRu) {
+          keyElement.textContent = keyElement.textContent.toLowerCase();
+        }
+      });
+    }
+  }
 });
