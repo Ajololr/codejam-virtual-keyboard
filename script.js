@@ -314,7 +314,9 @@ function toggleCapsLock() {
 
 function triggerButton(keyCode) {
   const button = document.getElementById(keyCode);
-  text = document.getElementById("textarea-input").value;
+  let text = document.getElementById('textarea-input').value;
+
+  document.getElementById('textarea-input').focus();
 
   switch(keyCode) {
     case 'Enter': 
@@ -377,41 +379,8 @@ function triggerButton(keyCode) {
       text += button.textContent;
   }
   document.getElementById("textarea-input").value = text;
-  if (event.code !== 'CapsLock') button.classList.add('pressed');
+  if (keyCode !== 'CapsLock') button.classList.add('pressed');
 }
-
-window.addEventListener('DOMContentLoaded', function () {
-  const input = document.createElement('textarea');
-  const keyboard = document.createElement('div');
-
-  input.setAttribute('id', 'textarea-input')
-  keyboard.classList.add('keyboard-container');
-
-  keyArr.forEach(key => {
-    const keyElement = document.createElement("button");
-
-    keyElement.classList.add('keyboard-container__key');
-    keyElement.setAttribute('id', key.keyCode);
-
-    keyElement.addEventListener('click', () => {
-      triggerButton(key.keyCode);
-      setTimeout(() => {
-        keyElement.classList.remove('pressed')
-      }, 300);
-    });
-
-    if (isEnglish) {
-      keyElement.textContent = key.valueEng || key.value;
-    } else {
-      keyElement.textContent = key.valueRu || key.value;
-    }
-
-    keyboard.appendChild(keyElement);
-  });
-
-  document.body.appendChild(input);
-  document.body.appendChild(keyboard);
-});
 
 document.addEventListener('keydown', function(event) {
   triggerButton(event.code);
@@ -428,6 +397,11 @@ document.addEventListener('keydown', function(event) {
     });
        
     isEnglish = !isEnglish;
+    localStorage.setItem('keyboardLanguage', isEnglish);  
+
+    setTimeout(() => {
+      document.getElementById('AltLeft').classList.remove('pressed');
+    }, 300)
   }
 })
 
@@ -457,4 +431,42 @@ document.addEventListener('keyup', function(event) {
       });
     }
   }
+});
+
+window.addEventListener('DOMContentLoaded', function () {
+  const input = document.createElement('textarea');
+  const keyboard = document.createElement('div');
+  isEnglish = localStorage.getItem('keyboardLanguage') === 'false' ? false : true;
+
+  input.setAttribute('id', 'textarea-input')
+  keyboard.classList.add('keyboard-container');
+
+  input.addEventListener('keydown', function(event) {
+    event.preventDefault();
+  })
+
+  keyArr.forEach(key => {
+    const keyElement = document.createElement("button");
+
+    keyElement.classList.add('keyboard-container__key');
+    keyElement.setAttribute('id', key.keyCode);
+
+    keyElement.addEventListener('click', () => {
+      triggerButton(key.keyCode);
+      setTimeout(() => {
+        if (key.keyCode !== 'CapsLock') keyElement.classList.remove('pressed');
+      }, 300);
+    });
+
+    if (isEnglish) {
+      keyElement.textContent = key.valueEng || key.value;
+    } else {
+      keyElement.textContent = key.valueRu || key.value;
+    }
+
+    keyboard.appendChild(keyElement);
+  });
+
+  document.body.appendChild(input);
+  document.body.appendChild(keyboard);
 });
