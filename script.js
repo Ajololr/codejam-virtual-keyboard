@@ -307,9 +307,11 @@ function toggleCapsLock() {
   if (isCapsLock) {
     keyArr.forEach((key) => {
       const keyElement = document.getElementById(key.keyCode);
-      
+
       if (key.specialValue || key.specialValueRu || key.specialValueEng) {
-        keyElement.textContent = (isEnglish ? key.specialValueEng : key.specialValueRu) || key.specialValue || keyElement.textContent.toUpperCase();
+        keyElement.textContent = (isEnglish ? key.specialValueEng : key.specialValueRu)
+        || key.specialValue
+        || keyElement.textContent.toUpperCase();
       } else if (key.valueRu) {
         keyElement.textContent = keyElement.textContent.toUpperCase();
       }
@@ -331,6 +333,7 @@ function triggerButton(keyCode) {
   const button = document.getElementById(keyCode);
   let text = document.getElementById('textarea-input').value;
 
+  if (keyCode !== 'CapsLock') button.classList.add('pressed');
   document.getElementById('textarea-input').focus();
 
   switch (keyCode) {
@@ -352,6 +355,29 @@ function triggerButton(keyCode) {
 
     case 'AltLeft':
     case 'AltRight':
+      if (document.getElementById('ShiftLeft').classList.contains('pressed') || document.getElementById('ShiftRight').classList.contains('pressed')) {
+        keyArr.forEach((key) => {
+          const elem = document.getElementById(key.keyCode);
+
+          if (isEnglish) {
+            elem.textContent = key.valueRu || key.value || key.specialValueRu;
+          } else {
+            elem.textContent = key.valueEng || key.value || key.specialValueEng;
+          }
+        });
+
+        isEnglish = !isEnglish;
+        localStorage.setItem('keyboardLanguage', isEnglish);
+
+        setTimeout(() => {
+          document.getElementById('AltLeft').classList.remove('pressed');
+          document.getElementById('AltRight').classList.remove('pressed');
+          document.getElementById('ShiftLeft').classList.remove('pressed');
+          document.getElementById('ShiftRight').classList.remove('pressed');
+        }, 300);
+      }
+      break;
+
     case 'ControlLeft':
     case 'ControlRight':
       break;
@@ -382,54 +408,59 @@ function triggerButton(keyCode) {
           const keyElement = document.getElementById(key.keyCode);
 
           if (key.specialValue || key.specialValueRu || key.specialValueEng) {
-            keyElement.textContent = (isEnglish ? key.specialValueEng : key.specialValueRu) || key.specialValue || keyElement.textContent.toUpperCase();
+            keyElement.textContent = (isEnglish ? key.specialValueEng : key.specialValueRu)
+            || key.specialValue
+            || keyElement.textContent.toUpperCase();
           } else if (key.valueRu) {
             keyElement.textContent = keyElement.textContent.toUpperCase();
           }
         });
+      }
+
+      if (document.getElementById('AltLeft').classList.contains('pressed') || document.getElementById('AltRight').classList.contains('pressed')) {
+        keyArr.forEach((key) => {
+          const elem = document.getElementById(key.keyCode);
+
+          if (isEnglish) {
+            elem.textContent = key.valueRu || key.value || key.specialValueRu;
+          } else {
+            elem.textContent = key.valueEng || key.value || key.specialValueEng;
+          }
+        });
+
+        isEnglish = !isEnglish;
+        localStorage.setItem('keyboardLanguage', isEnglish);
+
+        setTimeout(() => {
+          document.getElementById('AltLeft').classList.remove('pressed');
+          document.getElementById('AltRight').classList.remove('pressed');
+          document.getElementById('ShiftLeft').classList.remove('pressed');
+          document.getElementById('ShiftRight').classList.remove('pressed');
+        }, 300);
       }
       break;
 
     default:
       text += button.textContent;
   }
+
   document.getElementById('textarea-input').value = text;
-  if (keyCode !== 'CapsLock') button.classList.add('pressed');
 }
 
-document.addEventListener('keydown', (event) => {
+document.onkeydown = (event) => {
   triggerButton(event.code);
+};
 
-  if (document.getElementById('ShiftLeft').classList.contains('pressed') && document.getElementById('AltLeft').classList.contains('pressed')) {
-    keyArr.forEach((key) => {
-      const elem = document.getElementById(key.keyCode);
-
-      if (isEnglish) {
-        elem.textContent = key.valueRu || key.value || key.specialValueRu;
-      } else {
-        elem.textContent = key.valueEng || key.value || key.specialValueEng;
-      }
-    });
-
-    isEnglish = !isEnglish;
-    localStorage.setItem('keyboardLanguage', isEnglish);
-
-    setTimeout(() => {
-      document.getElementById('AltLeft').classList.remove('pressed');
-    }, 300);
-  }
-});
-
-document.addEventListener('keyup', (event) => {
-  if (event.code !== 'CapsLock') document.getElementById(event.code).classList.remove('pressed');
-
+document.onkeyup = (event) => {
   if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
     if (isCapsLock) {
       keyArr.forEach((key) => {
         const keyElement = document.getElementById(key.keyCode);
-      
+
         if (key.specialValue || key.specialValueRu || key.specialValueEng) {
-          keyElement.textContent = (isEnglish ? key.specialValueEng : key.specialValueRu) || key.specialValue || keyElement.textContent.toUpperCase();
+          keyElement.textContent = (isEnglish ? key.specialValueEng : key.specialValueRu)
+          || key.specialValue
+          || keyElement.textContent.toUpperCase();
         } else if (key.valueRu) {
           keyElement.textContent = keyElement.textContent.toUpperCase();
         }
@@ -445,16 +476,30 @@ document.addEventListener('keyup', (event) => {
         }
       });
     }
+    document.getElementById('ShiftLeft').classList.remove('pressed');
+    document.getElementById('ShiftRight').classList.remove('pressed');
   }
-});
+
+  if (event.code !== 'CapsLock') document.getElementById(event.code).classList.remove('pressed');
+};
 
 window.addEventListener('DOMContentLoaded', () => {
   const input = document.createElement('textarea');
   const keyboard = document.createElement('div');
-  isEnglish = localStorage.getItem('keyboardLanguage') !== 'false';
 
+  isEnglish = localStorage.getItem('keyboardLanguage') !== 'false';
   input.setAttribute('id', 'textarea-input');
   keyboard.classList.add('keyboard-container');
+
+  keyboard.onclick = (event) => {
+    if (!event.target.classList.contains('keyboard-container__key')) return;
+    const keyCode = event.target.id;
+
+    triggerButton(keyCode);
+    setTimeout(() => {
+      document.onkeyup({ code: keyCode });
+    }, 300);
+  };
 
   input.addEventListener('keydown', (event) => {
     event.preventDefault();
@@ -465,13 +510,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     keyElement.classList.add('keyboard-container__key');
     keyElement.setAttribute('id', key.keyCode);
-
-    keyElement.addEventListener('click', () => {
-      triggerButton(key.keyCode);
-      setTimeout(() => {
-        if (key.keyCode !== 'CapsLock') keyElement.classList.remove('pressed');
-      }, 300);
-    });
 
     if (isEnglish) {
       keyElement.textContent = key.valueEng || key.value;
