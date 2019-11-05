@@ -2,6 +2,7 @@ const keyArr = [
   {
     valueRu: 'ё',
     valueEng: '`',
+    specialValueEng: '~',
     keyCode: 'Backquote',
   },
   {
@@ -11,17 +12,20 @@ const keyArr = [
   },
   {
     value: '2',
-    specialValue: '@',
+    specialValueRu: '"',
+    specialValueEng: '@',
     keyCode: 'Digit2',
   },
   {
     value: '3',
-    specialValue: '#',
+    specialValueRu: '№',
+    specialValueEng: '#',
     keyCode: 'Digit3',
   },
   {
     value: '4',
-    specialValue: '$',
+    specialValueRu: ';',
+    specialValueEng: '$',
     keyCode: 'Digit4',
   },
   {
@@ -31,12 +35,14 @@ const keyArr = [
   },
   {
     value: '6',
-    specialValue: '^',
+    specialValueRu: ':',
+    specialValueEng: '^',
     keyCode: 'Digit6',
   },
   {
     value: '7',
-    specialValue: '&',
+    specialValueRu: '?',
+    specialValueEng: '&',
     keyCode: 'Digit7',
   },
   {
@@ -127,16 +133,19 @@ const keyArr = [
   {
     valueRu: 'х',
     valueEng: '[',
+    specialValueEng: '{',
     keyCode: 'BracketLeft',
   },
   {
     valueRu: 'ъ',
     valueEng: ']',
+    specialValueEng: '}',
     keyCode: 'BracketRight',
   },
   {
-    valueRu: '\\',
-    valueEng: '/',
+    value: '\\',
+    specialValueEng: '|',
+    specialValueRu: '/',
     keyCode: 'Backslash',
   },
   {
@@ -191,11 +200,13 @@ const keyArr = [
   {
     valueRu: 'ж',
     valueEng: ';',
+    specialValueEng: ':',
     keyCode: 'Semicolon',
   },
   {
     valueRu: 'э',
     valueEng: '\'',
+    specialValueEng: '"',
     keyCode: 'Quote',
   },
   {
@@ -245,16 +256,20 @@ const keyArr = [
   {
     valueRu: 'б',
     valueEng: ',',
+    specialValueEng: '<',
     keyCode: 'Comma',
   },
   {
     valueRu: 'ю',
     valueEng: '.',
+    specialValueEng: '>',
     keyCode: 'Period',
   },
   {
     valueRu: '.',
     valueEng: '/',
+    specialValueEng: '?',
+    specialValueRu: ',',
     keyCode: 'Slash',
   },
   {
@@ -292,9 +307,9 @@ function toggleCapsLock() {
   if (isCapsLock) {
     keyArr.forEach((key) => {
       const keyElement = document.getElementById(key.keyCode);
-
-      if (key.specialValue) {
-        keyElement.textContent = key.specialValue;
+      
+      if (key.specialValue || key.specialValueRu || key.specialValueEng) {
+        keyElement.textContent = (isEnglish ? key.specialValueEng : key.specialValueRu) || key.specialValue || keyElement.textContent.toUpperCase();
       } else if (key.valueRu) {
         keyElement.textContent = keyElement.textContent.toUpperCase();
       }
@@ -303,8 +318,8 @@ function toggleCapsLock() {
     keyArr.forEach((key) => {
       const keyElement = document.getElementById(key.keyCode);
 
-      if (key.specialValue) {
-        keyElement.textContent = key.value;
+      if (key.specialValue || key.specialValueRu || key.specialValueEng) {
+        keyElement.textContent = (isEnglish ? key.valueEng : key.valueRu) || key.value;
       } else if (key.valueRu) {
         keyElement.textContent = keyElement.textContent.toLowerCase();
       }
@@ -356,8 +371,8 @@ function triggerButton(keyCode) {
         keyArr.forEach((key) => {
           const keyElement = document.getElementById(key.keyCode);
 
-          if (key.specialValue) {
-            keyElement.textContent = key.value;
+          if (key.specialValue || key.specialValueRu || key.specialValueEng) {
+            keyElement.textContent = (isEnglish ? key.valueEng : key.valueRu) || key.value;
           } else if (key.valueRu) {
             keyElement.textContent = keyElement.textContent.toLowerCase();
           }
@@ -366,8 +381,8 @@ function triggerButton(keyCode) {
         keyArr.forEach((key) => {
           const keyElement = document.getElementById(key.keyCode);
 
-          if (key.specialValue) {
-            keyElement.textContent = key.specialValue;
+          if (key.specialValue || key.specialValueRu || key.specialValueEng) {
+            keyElement.textContent = (isEnglish ? key.specialValueEng : key.specialValueRu) || key.specialValue || keyElement.textContent.toUpperCase();
           } else if (key.valueRu) {
             keyElement.textContent = keyElement.textContent.toUpperCase();
           }
@@ -390,9 +405,9 @@ document.addEventListener('keydown', (event) => {
       const elem = document.getElementById(key.keyCode);
 
       if (isEnglish) {
-        elem.textContent = key.valueRu || key.value;
+        elem.textContent = key.valueRu || key.value || key.specialValueRu;
       } else {
-        elem.textContent = key.valueEng || key.value;
+        elem.textContent = key.valueEng || key.value || key.specialValueEng;
       }
     });
 
@@ -412,9 +427,9 @@ document.addEventListener('keyup', (event) => {
     if (isCapsLock) {
       keyArr.forEach((key) => {
         const keyElement = document.getElementById(key.keyCode);
-
-        if (key.specialValue) {
-          keyElement.textContent = key.specialValue;
+      
+        if (key.specialValue || key.specialValueRu || key.specialValueEng) {
+          keyElement.textContent = (isEnglish ? key.specialValueEng : key.specialValueRu) || key.specialValue || keyElement.textContent.toUpperCase();
         } else if (key.valueRu) {
           keyElement.textContent = keyElement.textContent.toUpperCase();
         }
@@ -423,8 +438,8 @@ document.addEventListener('keyup', (event) => {
       keyArr.forEach((key) => {
         const keyElement = document.getElementById(key.keyCode);
 
-        if (key.specialValue) {
-          keyElement.textContent = key.value;
+        if (key.specialValue || key.specialValueRu || key.specialValueEng) {
+          keyElement.textContent = (isEnglish ? key.valueEng : key.valueRu) || key.value;
         } else if (key.valueRu) {
           keyElement.textContent = keyElement.textContent.toLowerCase();
         }
